@@ -19,7 +19,9 @@ FarmConnect Backend is the Node.js, Express, and MariaDB/MySQL API for the FarmC
 - `routes/`: Defines API endpoint URLs and attaches middleware/controllers.
 - `uploads/`: Stores product images uploaded through Multer.
 - `database/schema.sql`: Creates all database tables.
-- `database/seed.sql`: Adds sample users, profiles, categories, products, orders, and inquiries.
+- `database/seed.sql`: Adds sample users, profiles, categories, products, orders, favorites, product notes, audit events, and inquiries.
+- `tests/api-smoke.js`: Runs repeatable authenticated API checks against the local service.
+- `tests/TEST_REPORT.md`: Records the tested steps and observed outcomes.
 - `server.js`: Starts Express and registers all route groups.
 
 ## Prerequisites
@@ -27,6 +29,7 @@ FarmConnect Backend is the Node.js, Express, and MariaDB/MySQL API for the FarmC
 - Node.js 18 or newer
 - npm
 - MariaDB or MySQL
+- The `mysql` command-line client on `PATH`
 
 ## Setup
 
@@ -75,6 +78,20 @@ npm run dev
 ```
 
 The backend runs at `http://localhost:5000` by default.
+
+### Windows PowerShell Setup
+
+Run these commands from the backend folder in PowerShell. Start the MySQL or MariaDB service first, and edit `.env` with your own local database password and a private JWT secret. Do not commit `.env`.
+
+```powershell
+Copy-Item .env.example .env
+# Edit .env, then create the tables and load the demo records:
+Get-Content .\database\schema.sql | mysql -u root -p
+Get-Content .\database\seed.sql | mysql -u root -p
+npm run dev
+```
+
+`schema.sql` creates the full development schema, including `favorites`, `product_notes`, and `audit_logs`. It drops existing tables before recreating them. `seed.sql` truncates and reloads the demo data, including example favorites, notes, and audit events. Use an empty development database or back up data first; these scripts are reset/setup scripts, not incremental upgrades.
 
 ## Environment Variables
 
@@ -128,6 +145,7 @@ All seeded accounts use the password `password123`.
 - If database login fails, check `DB_USER`, `DB_PASSWORD`, and `DB_HOST` in `.env`.
 - If the database does not exist, rerun `mysql -u root -p < database/schema.sql`.
 - If the frontend receives a CORS error, add the exact frontend origin to `CLIENT_URLS`, then restart the backend.
+- If a port is already occupied, stop the previous FarmConnect backend process before restarting it on port `5000`.
 
 ## JWT Authentication
 
@@ -184,10 +202,32 @@ Product image uploads use Multer in `middleware/uploadMiddleware.js`. Images are
 - `POST /api/categories`: Admin creates a category.
 - `PUT /api/categories/:id`: Admin updates a category.
 
+### Buyer Features
+
+- `GET /api/favorites`: List the authenticated buyer's database-backed favorites.
+- `GET /api/favorites/:productId`: Check whether a product is favorited.
+- `POST /api/favorites/:productId`: Add or toggle a favorite.
+- `DELETE /api/favorites/:productId`: Remove a favorite.
+- `GET /api/notes/my-notes`: List the authenticated buyer's product notes.
+- `POST /api/notes`: Create a note; only one note per buyer/product is allowed.
+- `PUT /api/notes/:id`: Update a note owned by the buyer.
+- `DELETE /api/notes/:id`: Delete a note owned by the buyer.
+
 ### Admin
 
 - `GET /api/admin/stats`: Basic system statistics.
 - `GET /api/admin/users`: List all users.
 - `GET /api/admin/products`: List all products.
 - `GET /api/admin/orders`: List all orders.
+- `GET /api/admin/audit-logs`: List the most recent audit events. Admin only.
 - `PUT /api/admin/users/:id/status`: Activate or deactivate a user.
+
+## Test the API
+
+With MySQL seeded and the backend running, execute:
+
+```bash
+node tests/api-smoke.js
+```
+
+The smoke test uses seeded demo accounts, covers successful flows, validation, empty states, and role/ownership checks, and removes the temporary order, favorite, and note it creates. Audit events are retained. See `tests/TEST_REPORT.md` for actual results and screenshots.
