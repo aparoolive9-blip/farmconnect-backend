@@ -11,7 +11,7 @@ Date: 2026-10-11
 - Backend fork: [aparoolive9-blip/farmconnect-backend](https://github.com/aparoolive9-blip/farmconnect-backend)
 - Original frontend starting commit: `03456156bb6ff0a98588589ef1e898025b945608`
 - Original backend starting commit: `be248854e5396604c6b0fe82e5bb6c74f2b9a563`
-- Final frontend implementation commit: `24d847f3a8d4c73a0c3b83f467c727a45b54c406` on [`feature/favorites`](https://github.com/aparoolive9-blip/farmconnect-frontend/tree/feature/favorites).
+- Final frontend implementation commit: `8708dde` on [`feature/favorites`](https://github.com/aparoolive9-blip/farmconnect-frontend/tree/feature/favorites).
 - Final backend feature implementation commit: `133f400` on [`feature/favorites`](https://github.com/aparoolive9-blip/farmconnect-backend/tree/feature/favorites).
 - Backend setup, test, and evidence package commit: `8bd406e` on [`feature/favorites`](https://github.com/aparoolive9-blip/farmconnect-backend/tree/feature/favorites).
 
@@ -72,6 +72,7 @@ Date: 2026-10-11
 | Open Browse Produce at 1280px and inspect all category tiles. | Eight seeded categories display matching photos; every image loads. | 8 tiles; all 8 images had nonzero natural dimensions. | PASS |
 | Click Maize. | Tile becomes selected, dropdown uses category 1, and products filter to maize. | `aria-pressed=true`; filter value `1`; Dry Maize Grain and White Maize displayed. | PASS |
 | Resize Browse Produce to 390px. | Category tiles remain usable without horizontal overflow. | 8 tiles displayed in a two-column layout; body width 375px with no overflow. | PASS |
+| Browse all seeded products and inspect fallback image sources. | Every product shows a photo of the listed item on both cards and details. | All 10 seeded products mapped to item-appropriate local images; all loaded. Product 3 detail also used the tomatoes photo. | PASS |
 
 ## Build Checks
 
