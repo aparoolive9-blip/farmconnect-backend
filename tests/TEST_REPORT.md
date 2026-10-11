@@ -11,7 +11,9 @@ Date: 2026-10-11
 - Backend fork: [aparoolive9-blip/farmconnect-backend](https://github.com/aparoolive9-blip/farmconnect-backend)
 - Original frontend starting commit: `03456156bb6ff0a98588589ef1e898025b945608`
 - Original backend starting commit: `be248854e5396604c6b0fe82e5bb6c74f2b9a563`
-- Final implementation commit IDs: see the delivery message accompanying this report; commits are made separately in the frontend and backend forks.
+- Final frontend implementation commit: `24d847f3a8d4c73a0c3b83f467c727a45b54c406` on [`feature/favorites`](https://github.com/aparoolive9-blip/farmconnect-frontend/tree/feature/favorites).
+- Final backend feature implementation commit: `133f400` on [`feature/favorites`](https://github.com/aparoolive9-blip/farmconnect-backend/tree/feature/favorites).
+- Backend setup, test, and evidence package commit: `8bd406e` on [`feature/favorites`](https://github.com/aparoolive9-blip/farmconnect-backend/tree/feature/favorites).
 
 ## Features and Acceptance Criteria
 
