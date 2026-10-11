@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { logAuditAction } = require("../utils/auditLogger");
 
 const allowedStatuses = ["pending", "accepted", "rejected", "completed", "cancelled"];
 
@@ -31,6 +32,12 @@ async function createOrder(req, res) {
      VALUES (?, ?, ?, ?, ?, ?, ?)`,
     [req.user.id, product.farmer_id, product_id, quantity_requested, totalEstimatedPrice, delivery_option, buyer_message || null]
   );
+
+  await logAuditAction({
+    userId: req.user.id,
+    action: "order_created",
+    details: { id: result.insertId, product_id, quantity_requested, totalEstimatedPrice }
+  });
 
   res.status(201).json({ message: "Order request sent.", id: result.insertId });
 }
@@ -82,6 +89,13 @@ async function updateOrderStatus(req, res) {
   }
 
   await pool.query("UPDATE orders SET status = ? WHERE id = ?", [status, req.params.id]);
+
+  await logAuditAction({
+    userId: req.user.id,
+    action: "order_updated",
+    details: { id: req.params.id, status, buyer_id: order.buyer_id, farmer_id: order.farmer_id }
+  });
+
   res.json({ message: "Order status updated." });
 }
 

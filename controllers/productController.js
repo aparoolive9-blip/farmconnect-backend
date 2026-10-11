@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { logAuditAction } = require("../utils/auditLogger");
 
 function buildProductFilters(query) {
   const filters = ["p.availability_status = 'available'"];
@@ -107,6 +108,12 @@ async function createProduct(req, res) {
     ]
   );
 
+  await logAuditAction({
+    userId: req.user.id,
+    action: "product_created",
+    details: { id: result.insertId, product_name, category_id }
+  });
+
   res.status(201).json({ message: "Product listing created.", id: result.insertId });
 }
 
@@ -155,6 +162,12 @@ async function updateProduct(req, res) {
     ]
   );
 
+  await logAuditAction({
+    userId: req.user.id,
+    action: "product_updated",
+    details: { id: req.params.id, product_name: nextProduct.product_name }
+  });
+
   res.json({ message: "Product listing updated." });
 }
 
@@ -172,6 +185,13 @@ async function deleteProduct(req, res) {
 
   // Soft delete keeps history for orders and inquiries while removing the listing from search results.
   await pool.query("UPDATE products SET availability_status = 'inactive' WHERE id = ?", [req.params.id]);
+
+  await logAuditAction({
+    userId: req.user.id,
+    action: "product_removed",
+    details: { id: req.params.id }
+  });
+
   res.json({ message: "Product listing removed." });
 }
 

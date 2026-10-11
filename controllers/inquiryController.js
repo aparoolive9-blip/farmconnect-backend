@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { logAuditAction } = require("../utils/auditLogger");
 
 const allowedStatuses = ["open", "answered", "closed"];
 
@@ -24,6 +25,12 @@ async function createInquiry(req, res) {
     "INSERT INTO inquiries (buyer_id, farmer_id, product_id, message) VALUES (?, ?, ?, ?)",
     [req.user.id, product.farmer_id, product_id, message]
   );
+
+  await logAuditAction({
+    userId: req.user.id,
+    action: "inquiry_created",
+    details: { id: result.insertId, product_id, farmer_id: product.farmer_id }
+  });
 
   res.status(201).json({ message: "Inquiry sent.", id: result.insertId });
 }
@@ -75,6 +82,13 @@ async function updateInquiryStatus(req, res) {
   }
 
   await pool.query("UPDATE inquiries SET status = ? WHERE id = ?", [status, req.params.id]);
+
+  await logAuditAction({
+    userId: req.user.id,
+    action: "inquiry_updated",
+    details: { id: req.params.id, status, farmer_id: inquiry.farmer_id, buyer_id: inquiry.buyer_id }
+  });
+
   res.json({ message: "Inquiry status updated." });
 }
 

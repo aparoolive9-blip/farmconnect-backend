@@ -121,6 +121,18 @@ CREATE TABLE favorites (
   CONSTRAINT fk_favorite_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
 );
 
+CREATE TABLE product_notes (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  buyer_id INT NOT NULL,
+  product_id INT NOT NULL,
+  note_text TEXT NOT NULL,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+  updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+  UNIQUE KEY unique_note_per_product (buyer_id, product_id),
+  CONSTRAINT fk_note_buyer FOREIGN KEY (buyer_id) REFERENCES users(id) ON DELETE CASCADE,
+  CONSTRAINT fk_note_product FOREIGN KEY (product_id) REFERENCES products(id) ON DELETE CASCADE
+);
+
 CREATE TABLE audit_logs (
   id INT AUTO_INCREMENT PRIMARY KEY,
   user_id INT,
@@ -129,3 +141,4 @@ CREATE TABLE audit_logs (
   created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   CONSTRAINT fk_audit_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE SET NULL
 );
+select* FROM favorites;

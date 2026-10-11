@@ -3,6 +3,7 @@ USE farmconnect;
 SET FOREIGN_KEY_CHECKS = 0;
 TRUNCATE TABLE audit_logs;
 TRUNCATE TABLE favorites;
+TRUNCATE TABLE product_notes;
 TRUNCATE TABLE inquiries;
 TRUNCATE TABLE orders;
 TRUNCATE TABLE products;
@@ -23,6 +24,7 @@ INSERT INTO users (id, full_name, email, phone, password, role, status) VALUES
 (7, 'Joshua Muwanga', 'buyer3@farmconnect.test', '+256700000007', '$2b$10$L9fzOpqxx/m3Ulcowil3NeTk8/GnCHsj29oy.LKPlOToq67TH8EpS', 'buyer', 'active'),
 (8, 'Agnes Nankya', 'buyer4@farmconnect.test', '+256700000008', '$2b$10$L9fzOpqxx/m3Ulcowil3NeTk8/GnCHsj29oy.LKPlOToq67TH8EpS', 'buyer', 'active');
 
+select * from users;
 INSERT INTO farmer_profiles (user_id, farm_name, farm_description, district, subcounty, village, address) VALUES
 (2, 'Namusoke Fresh Farm', 'Mixed crop farm supplying maize, beans, and vegetables.', 'Wakiso', 'Nangabo', 'Kiteezi', 'Kiteezi trading center'),
 (3, 'Okello Northern Produce', 'Family farm focused on grains and poultry.', 'Gulu', 'Laroo', 'Pece', 'Near Gulu market'),
@@ -73,3 +75,13 @@ INSERT INTO favorites (buyer_id, product_id) VALUES
 (5, 2),
 (6, 7),
 (7, 4);
+
+INSERT INTO product_notes (buyer_id, product_id, note_text) VALUES
+(5, 1, 'Need the maize delivered before Saturday morning.'),
+(6, 7, 'Ask about moisture before final purchase.'),
+(7, 5, 'Follow up on egg supply and weekly pricing.');
+
+INSERT INTO audit_logs (user_id, action, details) VALUES
+(1, 'seed_data_loaded', '{"source":"database/seed.sql"}'),
+(5, 'buyer_login', '{"email":"buyer1@farmconnect.test"}'),
+(2, 'product_listed', '{"product_id":1,"product_name":"Dry Maize Grain"}');

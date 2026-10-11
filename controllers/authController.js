@@ -1,6 +1,7 @@
 const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const pool = require("../config/db");
+const { logAuditAction } = require("../utils/auditLogger");
 
 function createToken(user) {
   return jwt.sign(
@@ -32,6 +33,12 @@ async function register(req, res) {
     "INSERT INTO users (full_name, email, phone, password, role) VALUES (?, ?, ?, ?, ?)",
     [full_name, email, phone, hashedPassword, role]
   );
+
+  await logAuditAction({
+    userId: result.insertId,
+    action: "user_registered",
+    details: { full_name, email, role }
+  });
 
   res.status(201).json({
     message: "Account created successfully.",

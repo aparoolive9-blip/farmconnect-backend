@@ -1,4 +1,5 @@
 const pool = require("../config/db");
+const { logAuditAction } = require("../utils/auditLogger");
 
 async function getCategories(req, res) {
   const [categories] = await pool.query(
@@ -20,6 +21,12 @@ async function createCategory(req, res) {
     [name, description || null]
   );
 
+  await logAuditAction({
+    userId: req.user.id,
+    action: "category_created",
+    details: { id: result.insertId, name, description: description || null }
+  });
+
   res.status(201).json({ message: "Category created.", id: result.insertId });
 }
 
@@ -34,6 +41,12 @@ async function updateCategory(req, res) {
     "UPDATE product_categories SET name = ?, description = ?, status = ? WHERE id = ?",
     [name, description || null, status || "active", req.params.id]
   );
+
+  await logAuditAction({
+    userId: req.user.id,
+    action: "category_updated",
+    details: { id: req.params.id, name, description: description || null, status: status || "active" }
+  });
 
   res.json({ message: "Category updated." });
 }

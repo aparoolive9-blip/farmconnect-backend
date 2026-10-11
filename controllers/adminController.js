@@ -49,6 +49,18 @@ async function getOrders(req, res) {
   res.json({ orders });
 }
 
+async function getAuditLogs(req, res) {
+  const [logs] = await pool.query(
+    `SELECT a.*, u.full_name AS user_name, u.email, u.role
+     FROM audit_logs a
+     LEFT JOIN users u ON a.user_id = u.id
+     ORDER BY a.created_at DESC
+     LIMIT 200`
+  );
+
+  res.json({ logs });
+}
+
 async function updateUserStatus(req, res) {
   const { status } = req.body;
   const allowedStatuses = ["active", "inactive"];
@@ -61,4 +73,4 @@ async function updateUserStatus(req, res) {
   res.json({ message: "User status updated." });
 }
 
-module.exports = { getStats, getUsers, getProducts, getOrders, updateUserStatus };
+module.exports = { getStats, getUsers, getProducts, getOrders, getAuditLogs, updateUserStatus };
